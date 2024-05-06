@@ -1,0 +1,30 @@
+var assert = require('assert');
+var otpauth = require('otpauth');
+var defaultTimeout = 30000;
+
+let totp = new otpauth.TOTP({
+  algorithm: 'SHA1',
+  digits: 6,
+  period: 30,
+  secret: $secure.LINK_USER_KEY
+});
+
+$browser.get('https://ic-web-au-stg.np.linkgroup.com/Login.aspx/Login').then(function(){
+  return $browser.findElement($driver.By.xpath('//button[@id="btnLogin"]')).click();
+}).then(function(){
+  return $browser.waitForAndFindElement($driver.By.xpath('//input[@name="identifier"]'), defaultTimeout).sendKeys($secure.LINK_USER_LOGIN);
+}).then(function(){
+  return $browser.findElement($driver.By.xpath('//input[@name="credentials.passcode"]')).sendKeys($secure.LINK_USER_PASSWORD);
+}).then(function(){
+  return $browser.findElement($driver.By.xpath('//input[@value="Login"]')).click();
+}).then(function(){
+  return $browser.waitForAndFindElement($driver.By.xpath('//*[@id="okta-sign-in"]/div[2]/div/div[@class="siw-main-view challenge-authenticator--google_otp mfa-verify"]/div[2]/form/div/div[4]/div/div[2]/span/input[@name="credentials.passcode"]'), defaultTimeout).sendKeys(totp.generate());
+}).then(function(){
+  return $browser.findElement($driver.By.xpath('//*[@value="Verify"]')).click();
+}).then(function(){
+  return $browser.waitForAndFindElement($driver.By.xpath('//li[@id="impersonateUserName"]'), defaultTimeout)
+}).then(function(){
+  return $browser.findElement($driver.By.xpath('//a[text()="Logout"]')).click();
+}).then(function(){
+  return $browser.waitForAndFindElement($driver.By.xpath('//button[@id="btnLogin"]'),defaultTimeout)
+})
