@@ -1,5 +1,5 @@
 var assert = require('assert');
-const ACCOUNT_ID = '4022261'
+const ACCOUNT_ID = $secure.ACCOUNT_ID
 const GRAPHQL_ENDPOINT = 'https://api.newrelic.com/graphql';
 const QUERY_KEY = $secure.NERDGRAPH_API_KEY
 
@@ -7,7 +7,7 @@ const graphqlQuery = `{
   actor {
     nrql(
       accounts: ${ACCOUNT_ID}
-      query: "SELECT count(*) FROM Transaction WHERE appName = 'Anup-foodMe' SINCE 1 hour ago"
+      query: "SELECT count(*) FROM MobileRequest WHERE appName IN ('Flutter-Android-Prod', 'Flutter-IOS-Prod') AND requestUrl LIKE '%bff-racing%' SINCE 1 hour ago"
     ) {
       nrql
       results
